@@ -31,7 +31,7 @@ class HomeController extends Controller
     {
         $roles = Role::all();
         $districts = Location::where('parent_id', 0)->orderBy('location_name', 'asc')->get();
-        return view('home', compact('roles', 'districts'));
+        return view('user.index', compact('roles', 'districts'));
     }
 
     public function userList(Request $request){
@@ -171,7 +171,7 @@ class HomeController extends Controller
             $data = User::with(['role:id,role_name', 'district:id,location_name',
                 'upazila:id,location_name'])->find($request->id);
             if ($data) {
-                $output['user_view'] = view('user_details', compact('data'))->render();
+                $output['user_view'] = view('user.user_details', compact('data'))->render();
                 $output['name'] = $data->name;
             } else {
                 $output['user_view'] = '';

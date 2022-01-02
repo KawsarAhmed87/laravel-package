@@ -19,10 +19,12 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+
 Route::post('/upazila-list', 'HomeController@upazila_list')->name('upazila.list');
 
+Route::get('/user', 'HomeController@index')->name('user');
 
+Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['prefix' => 'user', 'as' => 'user.'], function(){
     Route::post('store', 'HomeController@store')->name('store');
     Route::post('list', 'HomeController@userList')->name('list');
@@ -32,3 +34,14 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function(){
     Route::post('change-status', 'HomeController@changeStatus')->name('change.status');
     Route::post('bulk-action-delete', 'HomeController@bulkActionDelete')->name('bulk.action.delete');
 });
+
+
+
+ /* * Begin :: Excel Route **
+******************************/
+Route::post('upload-excel-file', 'ExcelFileUploadController@index')->name('upload.excel.file');
+Route::get('export-excel-file', 'ExcelFileUploadController@export')->name('export.excel.file');
+
+/*****************************
+ * * End :: Excel Route **
+******************************/

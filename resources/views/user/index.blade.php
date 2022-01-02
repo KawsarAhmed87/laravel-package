@@ -80,7 +80,10 @@
                     <div class="row">
                         <div class="col-md-6">User List</div>
                         <div class="col-md-6">
-                            <button class="btn btn-primary btn-sm float-right" onclick="showModal('Add New User', 'Save')">Add New</button>
+                            <button class="btn btn-primary float-right" onclick="showModal('Add New User','Save')">Add
+                            New</button>
+                        <button class="btn btn-success float-right mr-2" onclick="showExcelModal('Upload File','Upload')">Upload Excel Sheet</button>
+                        <button class="btn btn-info text-white float-right mr-2" id="export-btn">Export Excel Sheet</button>
                         </div>
                     </div>
                 </div>
@@ -161,6 +164,7 @@
 
 @include('modal.modal-xl')
 @include('modal.modal-view')
+@include('modal.excel')
 @endsection
 
 @push('script')
@@ -640,6 +644,55 @@
             });
         }
     });
+
+      function showExcelModal(title, btnText) {
+        $('#uploadExcelForm')[0].reset();
+        $('#uploadExcelForm').find('.is-invalid').removeClass('is-invalid');
+        $('#uploadExcelForm').find('.error').remove();
+        $('.dropify-clear').trigger('click');
+        $('#excelDataModal').modal({
+            keyboard: false,
+            backdrop: 'static',
+        });
+        $('#excelDataModal .modal-title').text(title);
+        $('#excelDataModal #upload-btn').text(btnText);
+    }
+
+     $(document).on('click', '#upload-btn', function () {
+        let storeForm = document.getElementById('uploadExcelForm');
+        let formData = new FormData(storeForm);
+        let url = "{{route('upload.excel.file')}}";
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            dataType: "JSON",
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (data) {
+                $('#uploadExcelForm').find('.is-invalid').removeClass('is-invalid');
+                $('#uploadExcelForm').find('.error').remove();
+                if (data.status == false) {
+                    $.each(data.errors, function (key, value) {
+                        $('#uploadExcelForm #' + key).addClass('is-invalid');
+                        $('#uploadExcelForm #' + key).parent().append(
+                            '<div class="error invalid-tooltip d-block">' + value + '</div>');
+                    });
+                } else {
+                    flashMessage(data.status, data.message);
+                    if (data.status == 'success') {
+                            table.ajax.reload();
+                        $('#excelDataModal').modal('hide');
+                    }
+                }
+            },
+            error: function (xhr, ajaxOption, thrownError) {
+                console.log(thrownError + '\r\n' + xhr.statusText + '\r\n' + xhr.responseText);
+            }
+        });
+    });
+
 
      function upazilaList(district_id, form) {
         if (district_id) {
